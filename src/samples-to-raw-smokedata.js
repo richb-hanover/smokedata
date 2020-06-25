@@ -9,64 +9,39 @@
 
 /**
  * linereader(theLines) - generator function to return the next sample
- * Call it with the lines read in from the input file
- * Return done when there are no more values.
- * Otherwise, yield the next value
- * It has a special case for lines of the form "NaN ###" in which case
+ * Initialize it with the path to the the input file
+ * Split the input file on line boundaries into an array.
+ * Then loop through the array, yielding the next value until no more
+ * Special case lines of the form "NaN ###" in which case
  *    it unshifts ### copies of NaN onto the input
- * @param theLines
+ * @param path
  * @returns {IterableIterator<*>}
  */
 
-function* linereader(theLines) {
-   nextSample = theLines.shift();        // grab the next value
-  nextSample = theLines.shift();
-  yield nextSample;
-  if (nextSample === undefined) return;       // nothing left, just return
-  // if (nextSample.substring(0,3) === "NaN ") {
-  //   for (let i = 1; i < 4; i++) {                 // unshift 119 copies back into the input
-  //     theLines.unshift("NaN");
-  //   }
-  //   yield NaN                                 // and yield the first NaN
-  // }
-  // else {
-  //   yield parseInt(nextSample);
-  // }
+function* linereader(path) {
+  const rawdata = fs.readFileSync(path).toString();
+  const lines = rawdata.split("\n");        // this adds an extra blank line
+  while(true) {
+    let nextSample = lines.shift();                 // grab the next one
+    if (nextSample === "") return;                  // hit the blank line; we're done
+    if (nextSample.substring(0, 4) === "NaN ") {
+      const count = parseInt(nextSample.substring(4));
+      for (let i = 1; i < count; i++) {             // unshift N-1 copies back into the input
+        lines.unshift("NaN");
+      }
+      nextSample = NaN;                             // set nextSample to NaN
+    }
+    yield parseInt(nextSample);                     // yield back nextSample
+  }
 }
 
-
-// function hourlies(med, h) {
-//   const hourVals = [];
-//   const numSamples = 120;
-//   for (let i = 0; i < numSamples; i++) {
-//     const val = Math.round(med+(h+1)*2*(Math.random()-0.5));
-//     hourVals.push(val);
-//   }
-//   console.log(JSON.stringify(hourVals));
-//   return hourVals;
-// }
-
-// const dayValues = [];
-// let hourCount = 0;
-// while (lines.length > 0) {
-//
-// }
-// for (let i = 0; i < numHours; i++){
-//   dayValues.push(hourlies(median, i));
-// }
-
 const fs = require('fs');
-const rawdata = fs.readFileSync('Raw Data Samples/samples0.txt').toString();
-const lines = rawdata.split("\n");
 
-const gen = linereader(lines);
+const gen = linereader('Raw Data Samples/samples0.txt');
 
-// while (true) {
-//   let nextVal = gen.next();
-  // if (nextVal.done) break;
-  console.log(gen.next().value);
-  // nextVal = gen.next();
-  console.log(gen.next().value);
-// }
+while (true) {
+  let nextVal = gen.next();
+  if (nextVal.value === undefined) break;
+  console.log(nextVal.value);
+}
 
-// console.log(lines);
