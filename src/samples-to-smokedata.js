@@ -1,6 +1,6 @@
 /**
  *
- * samples-to-raw-smokedata.js
+ * samples-to-smokedata.js
  * Read a file of (numeric) readings, one per line, (these might be every-30-second samples)
  * and output rows containing 120 samples as a Javascript array.
  *

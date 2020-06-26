@@ -1,31 +1,34 @@
-# Preparing Raw Smokedata files
+# Preparing Smokedata Files
 
-This repo contains auto-generated data and actual live-capture raw data of "response times"
+This repo contains auto-generated and live-capture data of "response times"
 for use with the **smokechart** plotting package.
 
-The expected use case is to represent several day's (a few hundred hours)
-worth of data, one hour per row,
-each row containing up to 120 values (a sample every 30 seconds).
-
-The **raw smokedata** format is a Javascript array of arrays.
-There is *no* timestamp meta-data included in the raw smokedata format.
-The producer of the data is responsible for tagging the data samples with their timestamps.
-
-Raw smokedata rows can contain any number of data points
-(or no points at all, represented by an empty array []).
+The **smokedata** format is a Javascript array of arrays.
+Smokedata rows can contain any number of data points,
+or no points at all, represented by an empty array [].
 The contents of a row must be numeric integer or floating point values.
 Missing data points may be represented by the Javascript value *NaN*.
 (Missing values might be caused by an event that prevented the sample
-from being recorded, for example, if no response was received for a ping-requet packet.)
+from being recorded, for example, if no response was received for a ping-request packet.)
 
+The expected use case for smokedata is to represent several day's (a few hundred hours)
+of data, one hour per row,
+each row containing up to 120 values (a sample every 30 seconds).
+The X-axis of the resulting smokechart would show each hour's results, where the Y-axis shows the distribution of samples. 
+However, smokedata can represent any set of data samples where each row
+represents a collection of values to be summarized in a single vertical slice on the X-axis of the chart.
 
-Because the raw data represents a historical sample, it will never change.
+There is no timestamp meta-data included in the smokedata format.
+The producer of the data is responsible for keeping track of the times
+associated with the smokedata.
+
+Because the smokedata represents a historical record, it will never change.
 The **smokechart** package may have functions for reducing the size of the
-array to avoid re-computation of median, percentile error bands, etc.
+array into a **smokebands array** to avoid re-computation of median, percentile error bands, etc.
 
 ## Source Files (src)
 
-This repo contains several Javascript programs to programmatically generate raw smokedata for testing.
+This repo contains several Javascript programs to programmatically generate smokedata for testing.
 Source files contain their generated data as a comment.
 
 * **perfectcone.js** - Generate 24 rows of data containing samples centered around a median value.
@@ -38,7 +41,7 @@ showing a line, and an even distribution of "bands".
 randomly distributed around a median value.
 The spread of the generated data should be similar to that of the perfect cone, but the randomness will introduce variations.
 
-* **samples-to-raw-smokedata.js** - Read a file of (numeric) readings,
+* **samples-to-smokedata.js** - Read a file of (numeric) readings,
 one per line, (these might be every-30-second samples)
 and output rows containing 120 samples as a Javascript array.
 The output filename is the same as the input's with a **.json** suffix.
@@ -61,6 +64,5 @@ This could be substited with *NaN*.
 
 ## Smokedata files
 
-The *Raw Data Samples* directory also contains JSON files with the **raw smokedata** created from the tools above.
-These can be used by the **smokechart** plotting package.
+The *Raw Data Samples* directory also contains JSON files with the **smokedata** created from the tools above.
 
