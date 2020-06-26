@@ -39,7 +39,8 @@ The spread of the generated data should be similar to that of the perfect cone, 
 
 * **samples-to-raw-smokedata.js** - Read a file of (numeric) readings,
 one per line, (these might be every-30-second samples)
-and output rows containing 120 samples as a Javascript array. 
+and output rows containing 120 samples as a Javascript array.
+Changes the output file to be **.json**
 
 ## Raw Data files
 
@@ -57,8 +58,10 @@ The **TestMyInternet-samples2.txt** has a brief interruption with a
 Duration of 6000 msec (the timeout).
 This could be substited with *NaN*.
 
+* **JSON files** have names that match the source data files. 
+
 ## Smokedata files
 
-This directory contains **raw smokedata** files created from the tools above.
+The *Raw Data Samples* directory also contains JSON files with the **raw smokedata** created from the tools above.
 These can be used by the **smokechart** plotting package.
 

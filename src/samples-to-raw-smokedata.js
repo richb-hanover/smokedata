@@ -31,17 +31,64 @@ function* linereader(path) {
       }
       nextSample = NaN;                             // set nextSample to NaN
     }
-    yield parseInt(nextSample);                     // yield back nextSample
+    yield parseFloat(nextSample);                     // yield back nextSample
   }
 }
 
-const fs = require('fs');
-
-const gen = linereader('Raw Data Samples/samples0.txt');
-
-while (true) {
-  let nextVal = gen.next();
-  if (nextVal.value === undefined) break;
-  console.log(nextVal.value);
+/**
+ * replaceNaN - a JSON.stringify() replacer function that transforms
+ *   NaN to "0/0" to serialize data containing NaN
+ * Reading the data back in requires a JSON.parse() reviver that undoes that substitution
+ * See https://stackoverflow.com/questions/21896792/force-json-stringify-to-emit-nan-infinity-or-js-json-lib-that-does-so
+ * @param key
+ * @param value
+ * @returns {string}
+ */
+function replaceNaN(key, value) {
+  if (value !== value) {
+    return '0/0';
+  }
+  return value;
 }
+
+  /**
+   * Main Routine
+   *
+   * Create the generator that'll handle the lines from the specified data file
+   * Consume the data and line 'em up into array rows containing 120 samples
+   * Output the JSON of the array rows to datafile-name-smokedata.txt
+   */
+  const fs = require('fs');
+  const path = 'Raw Data Samples/pings';
+  const gen = linereader(path+".txt");
+
+  const dayValues = [];
+  let hourValues = [];
+  while (true) {
+    let nextVal = gen.next();
+    if (nextVal.value === undefined) break;
+    hourValues.push(nextVal.value);
+    if (hourValues.length >= 120) {
+      dayValues.push(hourValues);
+      hourValues = [];
+    }
+  }
+  if (hourValues.length > 0) {
+    dayValues.push(hourValues);
+  }
+
+  // Output the accumulated dayValues as JSON
+  // replacing NaN with "0/0"
+  // and breaking lines at the end of each row of the array
+  const rawsmokedata = JSON.stringify(dayValues, replaceNaN,)
+    .replace(/],/g, "],\n")
+    .replace(/\[\[/, "[\n[")
+    .replace(/]]/,"]\n]");
+
+  console.log(rawsmokedata);
+
+  // Finally write out the data to a JSON file
+  fs.writeFileSync(path+'.json', rawsmokedata);
+
+
 
