@@ -1,7 +1,7 @@
 # Preparing Smokedata Files
 
 This repo contains auto-generated and live-capture data of "response times"
-for use with the **smokechart** plotting package.
+for use with the **smokechart** plotting package from [Alex Sergeyev](https://github.com/asergeyev/d3-smokechart).
 
 The **smokedata** format is a Javascript array of arrays.
 Smokedata rows can contain any number of data points,
@@ -29,7 +29,6 @@ array into a **smokebands array** to avoid re-computation of median, percentile 
 ## Source Files (src)
 
 This repo contains several Javascript programs to programmatically generate smokedata for testing.
-Source files contain their generated data as a comment.
 
 * **perfectcone.js** - Generate 24 rows of data containing samples centered around a median value.
 The first row has only the median value, the second has 3 values [med-1, med, med+1], the third row five values,
